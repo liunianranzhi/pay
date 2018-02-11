@@ -1,0 +1,106 @@
+<@compress single_line=true>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>京华亿家商城业务管理平台</title>
+  <#assign basePath = springMacroRequestContext.contextPath/>
+  <link rel="stylesheet" href="${basePath}/layui/css/layui.css">
+  <link rel="stylesheet" href="${basePath}/css/base.css">
+  <script src="${basePath}/layui/layui.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin ">
+	<!-- start nav -->
+	<div class="layui-header header">
+		<div class="layui-main">	
+			<!-- <img alt="" src="${basePath}/layui/image/logo.png" style="position: absolute;margin-left: 35px;margin-top:15px;"> -->
+			<img alt="" src="${basePath}/layui/image/logo_g.png" style="position: absolute;margin-left: 35px;margin-top:15px;width:93px;height: 30px;">
+			<ul class="layui-nav">
+				<#list UserMenu as menu>
+					${Platform} == ${menu.sysAuth.sysAuthId}
+					<#if  Platform == menu.sysAuth.sysAuthId>
+						<li class="layui-nav-item layui-this" level="${menu.sysAuth.level}" sysAuthId="${menu.sysAuth.sysAuthId}"><a href="${menu.sysAuth.sysAuthAction}">${menu.sysAuth.sysAuthName}</a></li>
+					<#else>
+						<li class="layui-nav-item" level="${menu.sysAuth.level}" sysAuthId="${menu.sysAuth.sysAuthId}"><a href="${menu.sysAuth.sysAuthAction}">${menu.sysAuth.sysAuthName}</a></li>
+					</#if>
+				</#list>
+			</ul>
+			<div class="layui-user-info">
+				${UserMenu?first.sysRole.sysRoleName} - ${UserInfo.sysUserName}
+				<!-- <a href="javascript:;" class="logout" style="color:#c2c2c2">退出登录</a> -->
+				<a href="javascript:;" class="logout">退出登录</a>
+			</div>
+		</div>
+	</div>
+	<!-- end nav -->
+	
+	<!-- start side -->
+	<div class="layui-side layui-bg-black">
+		<div class="layui-side-scroll">
+			<ul class="layui-nav layui-nav-tree" lay-filter="filter">
+				<#list UserMenu as menu>
+					<#if  Platform == menu.sysAuth.sysAuthId>
+						<#list menu.children as second>
+							<li class="layui-nav-item layui-nav-itemed">
+								<a href="javascript:;">${second.sysAuth.sysAuthName}<span class="layui-nav-more"></span></a>
+								<dl class="layui-nav-child">
+									<#list second.children as three>
+										<dd class="">
+											<a href="${three.sysAuth.sysAuthAction}">${three.sysAuth.sysAuthName}</a>
+										</dd>
+									</#list>
+								</dl>
+							</li>
+						</#list>
+					</#if>
+				</#list>				
+			</ul>
+		</div>
+	</div>
+	<!-- end side -->
+	
+	<#macro rightContainer>
+		<div class="right-container">
+			<#nested>
+		</div>  
+	</#macro>
+	
+<!-- 	<div class="layui-footer footer"> -->
+<!-- 		<div class="layui-main"> -->
+<!-- 			<p> -->
+<!-- 				2016 © <a href="javascript:;">惠农丰</a> -->
+<!-- 				<a href="javascript:;">关于我们</a> -->
+<!-- 				<a href="javascript:;" target="_blank">微信公众号</a> -->
+<!-- 				<a href="javascript:;" target="_blank">问题反馈</a> -->
+<!-- 			</p> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+</div>	
+<script type="text/javascript">
+layui.use(['element','layer','jquery'], function(){
+	  var layer = layui.layer,element=layui.element(), $ = layui.jquery;
+	  var pathName = window.location.href;
+	  $("a[href='"+pathName+"']").parent().addClass('layui-this');
+	  
+	  $('.logout').click(function(){
+		  layer.confirm('确认要退出系统吗？', {
+		    btn: ['确认','取消']
+		  }, function(){
+			  $.ajax({
+				  url:'${AuthAdminPlatformUri}/Logout',
+				  type: 'GET',
+				  dataType: 'JSONP',
+				  jsonpCallback: 'callback',
+				  success:function(data){
+					  window.location.href="${AuthAdminPlatformUri}/";
+				  }
+			  })
+		  })
+	  });	  
+});
+</script>
+</body>
+</html>
+</@compress>

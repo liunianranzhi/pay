@@ -1,0 +1,53 @@
+<#assign basePath = springMacroRequestContext.contextPath/>
+<link rel="stylesheet" href="${basePath}/layui/css/layui.css">
+<script src="${basePath}/layui/layui.js"></script>
+	<div class="layui-form" style="padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px">
+
+	<table class="layui-table" lay-even="" lay-skin="row">
+		<thead>
+			<tr>
+				<th>订单ID</th>
+				<th>操作员</th>
+				<th>操作信息</th>
+				<th>操作时间</th>
+			</tr>
+		</thead>
+		<tbody id="pageContent">
+			<#if orderLogPage.result?size gt 0> 
+				<#list orderLogPage.result as orderLog>
+					<tr>
+						<td>${orderLog.orderId}</td>
+						<td>${orderLog.opName}</td>
+						<td style="max-width:200px;word-break:break-all; word-wrap:break-word;">${orderLog.opMsg}</td>
+						<td>${orderLog.cTime[0..18]}</td>
+					</tr>
+				</#list> 
+				<#else>
+					<tr>
+						<td colspan="4" align="center">暂无数据!</td>
+					</tr>
+			</#if>
+		</tbody>
+	</table>
+	<div class="admin-table-page">
+		<div id="pagebar"></div>
+	</div>
+	</div>
+<script type="text/javascript">
+	layui.use([ 'element', 'laypage', 'layer', 'jquery' ], function() {
+		var laypage = layui.laypage, layer = layui.layer, element = layui
+				.element(), $ = layui.jquery;
+		laypage({
+			cont : 'pagebar',
+			curr : '${orderLogPage.pageNo}',
+			pages : '${orderLogPage.totalPage}',
+			skip : true,
+			jump : function(obj, first) {
+				if (!first) {
+					$('#pageNo').val(obj.curr);
+					$('form').submit();
+				}
+			}
+		});
+	})
+</script>

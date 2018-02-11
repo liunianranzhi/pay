@@ -1,0 +1,95 @@
+<#include "index.html"> <@rightContainer>
+<div class="layui-body site-right">
+	<!--Start search toolbar -->
+	<fieldset class="layui-elem-field layui-field-title">
+		<legend>合作商户应用管理</legend>
+	</fieldset>
+	<form class="layui-form layui-form-pane" action="${basePath}/partnerApp"
+		method="post" id="searchForm">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">应用名称</label>
+				<div class="layui-input-inline">
+					<input type="text" name="appName"<#if
+					partnerApp.appName??>value='${partnerApp.appName}'</#if>
+					autocomplete="off" class="layui-input">
+				</div>
+			</div>
+		</div>
+		<input type="hidden" name="pageNo" value="1" id="pageNo">
+		<!-- End search toolbar -->
+		<blockquote class="layui-elem-quote">
+			<a href="${basePath}/partnerApp/toAdd" class="layui-btn layui-btn-small"><i class="layui-icon">&#xe608;</i>新增应用</a>
+			<button class="layui-btn layui-btn-small">
+				<i class="layui-icon">&#xe615;</i>立即查询
+			</button>
+		</blockquote>
+
+	</form>
+
+	<table class="layui-table" lay-even="" lay-skin="row">
+		<thead>
+			<tr>
+				<th>应用名称</th>
+				<th>应用标识</th>
+				<th>回调地址</th>
+				<th>是否限制IP</th>
+				<th>ip</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody id="pageContent">
+			<#if partnerAppPage.result?size gt 0> 
+				<#list partnerAppPage.result as partnerApp>
+					<tr>
+						<td>${partnerApp.appName}</td>
+						<td>${partnerApp.appId}</td>
+						<td>${partnerApp.notify}</td>
+						<#if partnerAppIsIpLimits ?? && partnerApp.isIpLimit ??>
+							<#list partnerAppIsIpLimits as partnerAppIsIpLimit>
+								<#if partnerAppIsIpLimit.code == partnerApp.isIpLimit>
+									<td>${partnerAppIsIpLimit.message}</td>
+								</#if>
+							</#list>
+						</#if>
+						<td>${partnerApp.ip}</td>
+						<td>
+							<a href="${basePath}/partnerApp/toEdit?appId=${partnerApp.appId}"
+							class="layui-btn layui-btn-small"><i class="layui-icon">&#xe642;</i>编辑应用</a>
+							<a href="${basePath}/partnerApp/showInfo?appId=${partnerApp.appId}"
+							class="layui-btn layui-btn-small"><i class="layui-icon">&#xe642;</i>查看信息</a>
+							<a href="${basePath}/partnerApp/toSetPayMode?appId=${partnerApp.appId}"
+							class="layui-btn layui-btn-small"><i class="layui-icon">&#xe642;</i>设置支付信息</a>
+						</td>
+					</tr>
+				</#list> 
+				<#else>
+					<tr>
+						<td colspan="5" align="center">暂无数据!</td>
+					</tr>
+			</#if>
+		</tbody>
+	</table>
+	<div class="admin-table-page">
+		<div id="pagebar"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	layui.use([ 'element', 'laypage', 'layer', 'jquery' ], function() {
+		var laypage = layui.laypage, layer = layui.layer, element = layui
+				.element(), $ = layui.jquery;
+		laypage({
+			cont : 'pagebar',
+			curr : '${partnerAppPage.pageNo}',
+			pages : '${partnerAppPage.totalPage}',
+			skip : true,
+			jump : function(obj, first) {
+				if (!first) {
+					$('#pageNo').val(obj.curr);
+					$('form').submit();
+				}
+			}
+		});
+	})
+</script>
+</@rightContainer>

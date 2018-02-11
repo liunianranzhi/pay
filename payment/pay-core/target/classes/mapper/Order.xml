@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.core.dao.order.OrderDao">
+		<insert id="save" parameterType="Order">
+			INSERT INTO pay_order (orderId, appId, partnerId, subject, detail, outTradeNo, notifyUrl, totalFee, status, statusMsg, createIp, attr) VALUES
+			(#{orderId}, #{appId}, #{partnerId}, #{subject}, #{detail}, #{outTradeNo}, #{notifyUrl}, #{totalFee}, #{status}, #{statusMsg}, #{createIp}, #{attr});
+		</insert>
+	
+		<select id="get" parameterType="Order" resultType="OrderVo">
+			SELECT * FROM pay_order 
+			<where>
+				<if test="orderId != null">
+					orderId = #{orderId}
+				</if>
+				<if test="status != null">
+					AND status = #{status}
+				</if>
+				<if test="partnerId != null">
+					AND partnerId = #{partnerId}
+				</if>
+				<if test="appId != null">
+					AND appId = #{appId}
+				</if>
+				<if test="outTradeNo != null and outTradeNo!=''">
+					AND outTradeNo = #{outTradeNo}
+				</if>
+			</where>
+		</select>	
+		
+		
+		
+		<update id="update" parameterType="Order">
+			UPDATE 	pay_order 
+				<set>
+					status = #{status},statusMsg = #{statusMsg},payMode=#{payMode},tradeNo=#{tradeNo}
+				</set>
+				<where>
+					orderId = #{orderId}
+				</where>
+		</update>	
+		
+</mapper>

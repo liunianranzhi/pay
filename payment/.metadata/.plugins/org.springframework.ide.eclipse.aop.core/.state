@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aop-reference-model>
+<aop-project name="pay-entity"/>
+<aop-project name="pay-api"/>
+<aop-project name="pay-core"/>
+<aop-project name="pay-utils"/>
+<aop-project name="pay-admin"/>
+</aop-reference-model>

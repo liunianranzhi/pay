@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.core.dao.order.OrderLogDao">
+	
+	<insert id="save"  parameterType="OrderLog">
+	 	<![CDATA[
+	        INSERT INTO pay_order_log (
+	        	orderId, opMsg, opName
+	        ) VALUES (
+	        #{orderId},#{opMsg},#{opName})
+	    ]]> 
+	</insert>
+	
+</mapper>

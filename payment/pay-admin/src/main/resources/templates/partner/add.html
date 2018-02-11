@@ -1,0 +1,82 @@
+<#include "index.html">  
+<@rightContainer>  
+<div class="layui-body site-right">
+
+	<fieldset class="layui-elem-field layui-field-title">
+	  <legend>新增合作商户信息</legend>
+	</fieldset>
+
+	<form class="layui-form layui-form-pane"  method="post">
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">商户名称</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="partnerName" autocomplete="off" placeholder="请输入商户名称" class="layui-input" lay-verify="required">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填商户名称</div>
+	  </div>
+	  
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">联系邮箱</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="partnerMail" placeholder="请输入联系邮箱" autocomplete="off" class="layui-input" lay-verify="partnerMail">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填写联系邮箱</div>
+	  </div>
+	  
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">联系人</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="operator" placeholder="请输入联系人" autocomplete="off" class="layui-input" lay-verify="required">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填写联系人</div>
+	  </div>
+
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">用户手机号</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="mobile" placeholder="请输入手机号" autocomplete="off" class="layui-input" lay-verify="phone" value="13999999999">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填写手机号</div>
+	  </div>
+	  
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">合作商状态</label>
+	    <div class="layui-input-block">
+	      <#if states ?? && states?size gt 0>
+	      	<#list states as state>
+	      		<input type="radio" name="state" value="${state.code}" title="${state.message}" lay-verify="required" checked="">
+	      	</#list>
+	      </#if>
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    	<button class="layui-btn" lay-submit="" lay-filter="submit-btn">确认提交</button>
+	        <button type="reset" class="layui-btn ">重置表单</button>
+	  </div>
+	</form>
+</div>
+<script type="text/javascript">
+layui.use(['layer','jquery','form'], function(){
+	  var layer = layui.layer,$ = layui.jquery, form = layui.form();
+	  form.verify({
+	    partnerMail:[/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/,'邮箱格式有误']
+	  });	  
+	  form.on('submit(submit-btn)', function(formData){
+        $.ajax({
+          type:'POST',
+	   	  url:'${basePath}/partner/add',
+	   	  data:formData.field,
+	   	  success:function(result){
+	   		  if(!result){
+				layer.msg(result.msg)	   			  
+	   		  }else{
+	   			  layer.msg(result.msg);
+	   			  setInterval(function(){location.href="${basePath}/partner";},2000);
+	   		  }
+	   	  }
+	     })
+	    return false;
+	  });
+});
+</script>
+</@rightContainer>

@@ -1,0 +1,175 @@
+<#include "index.html">  
+<@rightContainer>  
+<style>
+	.layui-form-pane .layui-form-label{
+		width:130px;
+	}
+	.layui-form-item .layui-input-inline{
+		width: 240px;
+	}
+</style>
+<div class="layui-body site-right">
+	<fieldset class="layui-elem-field layui-field-title">
+	  <legend>商户支付配置</legend>
+	</fieldset>
+	<div style="display:none;">
+		<ul class="layui-nav layui-nav-tree" lay-filter="demo">
+			<li class="layui-nav-item layui-nav-itemed"><a
+				href="javascript:;">支付方式</a>
+				<dl class="layui-nav-child">
+					<#if payModes?size gt 0> <#list payModes as payMode>
+					<dd>
+						<a href="javascript:;" class="openTab" payModeCode="${payMode.code}" payModeMsg="${payMode.msg}">${payMode.msg}</a>
+					</dd>
+					</#list> </#if>
+				</dl></li>
+		</ul>
+	</div>
+	<div class="layui-tab" lay-filter="confForm" style="margin-left:50px;float:left;">
+		<ul class="layui-tab-title">
+		</ul>
+		<div class="layui-tab-content">
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+layui.use(['layer','jquery','form','element'], function(){
+	  var layer = layui.layer,$ = layui.jquery, form = layui.form(),element = layui.element();
+	  function getBody(payModeMsg,payModeCode){
+		  var appId = "${partnerApp.appId}";
+		  var partnerId = "${partnerApp.partnerId}";
+		  var payMode = {};
+		  payMode.appId = appId;
+		  payMode.partnerId = partnerId;
+		  payMode.payModeCode = payModeCode;
+		  var payModeConf = getPayConf(payMode);
+		  var isEmpty = $.isEmptyObject(payModeConf);
+		  if(isEmpty){
+			  payModeConf.confPartnerId = payModeConf.confPrivateKey = payModeConf.confAppId = payModeConf.confRsaPrivateKey = "";
+		  }
+		  var formHead = '<form class="layui-form layui-form-pane"  method="post">';
+		  var formFoot = 
+			'<input type="hidden" name="appId" value="'+appId+'">'+
+			'<input type="hidden" name="partnerId" value="'+partnerId+'">'+
+			'<input type="hidden" name="payModeCode" value="'+payModeCode+'">'+
+			'<input type="hidden" name="payModeName" value="'+payModeMsg+'">'
+		  var subBtnBody = 
+			  '<div class="layui-form-item">'+
+				'<button class="layui-btn subBtn" lay-submit="" lay-filter="submit-btn">确认提交</button>'+
+				'<button type="reset" class="layui-btn">重置表单</button>'+
+			  '</div>'
+		  var editBtnBody = 
+			  '<div class="layui-form-item">'+
+				'<a class="layui-btn editBtn" lay-submit="" lay-filter="submit-btn">确认修改</a>'+
+				'<button type="reset" class="layui-btn">重置表单</button>'+
+			  '</div>'
+		  var formBottom = '</form>';
+		  var wxBody = 
+				'<div class="layui-form-item">'+
+					'<label class="layui-form-label">收款商户ID</label>'+
+					'<div class="layui-input-inline">'+
+						'<input type="text" name="confPartnerId" value="'+payModeConf.confPartnerId+'" placeholder="请输入商户ID" autocomplete="off" value="" class="layui-input" lay-verify="required">'+
+					'</div>'+
+					'<div class="layui-form-mid layui-word-aux">请务必填写商户ID</div>'+
+				'</div>'+
+				'<div class="layui-form-item">'+
+					'<label class="layui-form-label">收款商户密钥</label>'+
+					'<div class="layui-input-inline">'+
+						'<input type="text" name="confPrivateKey" value="'+payModeConf.confPrivateKey+'" placeholder="请输入商户密钥" autocomplete="off" value="" class="layui-input" lay-verify="required">'+
+					'</div>'+
+					'<div class="layui-form-mid layui-word-aux">请务必填写商户密钥</div>'+
+				'</div>'+
+				'<div class="layui-form-item">'+
+					'<label class="layui-form-label">appId</label>'+
+					'<div class="layui-input-inline">'+
+						'<input type="text" name="confAppId" placeholder="请输入appId" value="'+payModeConf.confAppId+'" autocomplete="off" value="" class="layui-input" lay-verify="required">'+
+					'</div>'+
+					'<div class="layui-form-mid layui-word-aux">请务必填写商户密钥</div>'+
+				'</div>';
+				var wxSerectBody = 
+					'<div class="layui-form-item">'+
+						'<label class="layui-form-label">微信appSecret</label>'+
+						'<div class="layui-input-inline">'+
+							'<textarea style="line-height:18px;resize:none;" name="confRsaPrivateKey" placeholder="请输入微信appSecret" autocomplete="off" value="" class="layui-input" lay-verify="required">'+payModeConf.confRsaPrivateKey+'</textarea>'+
+						'</div>'+
+						'<div class="layui-form-mid layui-word-aux">微信appSecret</div>'+
+					'</div>';
+				var aliBody = wxBody + 
+				'<div class="layui-form-item">'+
+					'<label class="layui-form-label">支付宝RSA密钥</label>'+
+					'<div class="layui-input-inline">'+
+						'<textarea style="line-height:18px;height:200px;resize:none;" name="confRsaPrivateKey" placeholder="请输入支付宝RSA密钥" autocomplete="off" value="" class="layui-input" lay-verify="required">'+payModeConf.confRsaPrivateKey+'</textarea>'+
+					'</div>'+
+					'<div class="layui-form-mid layui-word-aux">请务必填写支付宝RSA密钥</div>'+
+				'</div>';
+				var wxForm = '';
+				var aliForm = '';
+				if(isEmpty){
+					wxForm = formHead + wxBody + wxSerectBody + formFoot + subBtnBody + formBottom;
+					aliForm = formHead +　aliBody + formFoot + subBtnBody + formBottom; 
+				}else{
+					wxForm = formHead + wxBody + wxSerectBody + formFoot + editBtnBody + formBottom;
+					aliForm = formHead +　aliBody + formFoot + editBtnBody + formBottom;
+				}
+			
+			if(payModeMsg.indexOf("微信") >= 0){
+				return wxForm;
+			}
+			if(payModeMsg.indexOf("支付宝") >= 0){
+				return aliForm;
+			}
+	  }
+	  function getPayConf(payMode){
+		  var payModeConf = {};
+		  $.ajax({
+			  url:'${basePath}/partnerApp/getPayMode',
+			  data:payMode,
+			  async:false,
+			  dataType:'json',
+			  type:'post',
+			  success:function(result){
+				  payModeConf = result;
+			  }
+		  });
+		  return payModeConf;
+	  }
+	  $('.openTab').on('click',function(){
+		  	var payModeCode = $(this).attr("payModeCode");
+			var payModeMsg = $(this).attr("payModeMsg");
+			var formBody = getBody(payModeMsg,payModeCode);
+				element.tabAdd('confForm', {
+					title : payModeMsg,
+					content : formBody,
+					id : payModeCode
+				})
+			$("ul[class=layui-tab-title] li").first().click();	
+		})
+		form.on('submit(submit-btn)',function(formData){
+			$.ajax({
+				url:'${basePath}/partnerApp/setPayMode',
+				data:formData.field,
+				type:'post',
+				dataTpye:'json',
+				success:function(result){
+					if(result.status){
+						layer.msg(result.msg);
+						setInterval(function(){
+							location.href="${basePath}/partnerApp";
+						},2000)
+					}else{
+						layer.msg(result.msg);
+					}
+				}
+			});
+			return false;
+		})
+		$(function(){
+			var tabList = $(".openTab");
+			$(tabList).each(function(){
+				$(this).click();
+			})
+		})
+});
+</script>
+</@rightContainer>

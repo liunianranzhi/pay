@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.partner.PayModeConfDao">
+
+	
+	<update id="update" parameterType="PayModeConf">
+	        UPDATE pay_mode_conf
+	        <trim prefix="SET" suffixOverrides=",">
+		        <if test="payModeName != null and payModeName != ''">
+		        	payModeName = #{ payModeName },
+		        </if>
+		        <if test="confPartnerId != null and confPartnerId != ''">
+		        	confPartnerId = #{confPartnerId},
+		        </if>
+		        <if test="confPrivateKey != null and confPrivateKey != ''">
+		        	confPrivateKey = #{confPrivateKey},
+		        </if>
+		        <if test="confAppId != null and confAppId != ''">
+		        	confAppId = #{ confAppId },
+		        </if>
+		        <if test="confRsaPrivateKey != null and confRsaPrivateKey != ''">
+		        	confRsaPrivateKey = #{confRsaPrivateKey},
+		        </if>
+	        </trim>
+	        WHERE partnerId=#{partnerId} AND appId = #{appId} AND payModeCode = #{payModeCode} 
+	</update>
+	
+	<insert id="save"  parameterType="PayModeConf">
+	 	<![CDATA[
+	        INSERT INTO pay_mode_conf (
+	        	partnerId, appId, payModeName,payModeCode,confPartnerId,confPrivateKey,confAppId,confRsaPrivateKey
+	        ) VALUES (
+	        
+	        #{partnerId},#{appId},#{payModeName},#{payModeCode},#{confPartnerId},#{confPrivateKey},#{confAppId},#{confRsaPrivateKey})
+	    ]]> 
+	</insert>
+	
+	<select id="get" parameterType="PayModeConf" resultType="PayModeConfVo">
+		SELECT * FROM pay_mode_conf
+		<where>
+			<if test="appId != null">
+				AND appId = #{appId}
+			</if>
+			<if test="partnerId !=null">
+				AND partnerId = #{partnerId}
+			</if>
+			<if test="payModeCode != null">
+				AND payModeCode = #{payModeCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="list" parameterType="PayModeConf" resultType="PayModeConfVo">
+		SELECT * FROM pay_mode_conf
+		<where>
+			<if test="appId != null">
+				AND appId = #{appId}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

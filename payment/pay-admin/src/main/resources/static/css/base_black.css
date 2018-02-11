@@ -1,0 +1,23 @@
+.header .layui-nav{position: absolute; left: 200px;  background: none;}
+.header .layui-nav .layui-nav-item{margin: 0 10px; line-height: 70px;}
+.header .layui-nav .layui-nav-item a{color: #999;}
+.header .layui-nav .layui-this{background-color: #009688;}
+.header .layui-nav .layui-nav-item a:hover,
+.header .layui-nav .layui-this a{color: #fff;}
+.header .layui-nav .layui-this:after, 
+.header .layui-nav-bar{background-color: #fff;}
+.header .layui-nav .layui-this a{padding: 0 30px;}
+
+.layui-user-info{position: absolute; right: 0; top: 35px; padding: 0; background: none;}
+
+.layui-footer{height: 30px;}
+
+/*Footer*/
+.footer{line-height: 30px; text-align: center; background-color: #eee; color: #666; font-weight: 300;}
+
+/*Right*/
+body  .site-right{top: 80px;left: 210px;right: 10px;}
+
+
+/*table*/
+.admin-table-page {bottom: 30px;width: 85%;text-align: center;}

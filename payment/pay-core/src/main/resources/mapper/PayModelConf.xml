@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.core.dao.pay.PayModeConfDao">
+
+	<select id="get" parameterType="PayModeConf" resultType="PayModeConfVo">
+		SELECT * FROM pay_mode_conf WHERE partnerId = #{partnerId} AND appId = #{appId} AND payModeCode = #{payModeCode}
+	</select>		
+</mapper>

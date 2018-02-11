@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.paybasicdata.TotalStatisticalDao">
+
+	<insert id="save"  parameterType="TotalStatistical">
+	 	<![CDATA[
+	        INSERT INTO pay_total_statistical (
+	        	payMode, dailyTotalPrice, dailyTotalCount, historyTotalPrice,historyTotalCount,cTime
+	        ) VALUES (
+	        #{payMode},#{dailyTotalPrice},#{dailyTotalCount},#{historyTotalPrice},#{historyTotalCount},#{cTime})
+	    ]]> 
+	</insert>
+	
+	<select id="list" parameterType="TotalStatistical" resultType="TotalStatisticalVo">
+		SELECT * FROM pay_total_statistical
+		ORDER BY cTime desc,payMode
+		LIMIT #{ start }, #{ pageSize }
+	</select>
+	
+	<select id="count" parameterType="TotalStatistical" resultType="java.lang.Integer">
+		SELECT count(id) FROM pay_total_statistical
+	</select>
+	
+	<select id="getBeforeList" parameterType="TotalStatistical" resultType="TotalStatisticalVo">
+		SELECT * FROM pay_total_statistical
+		WHERE cTime = #{cTime,jdbcType=TIMESTAMP}
+	</select>
+	
+</mapper>

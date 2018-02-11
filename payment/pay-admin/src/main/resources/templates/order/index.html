@@ -1,0 +1,343 @@
+<#include "index.html"> <@rightContainer>
+<style>
+	.layui-table{
+		width:1600px;
+	}
+	.layui-elem-quote{
+		width:1566px;
+	}
+	.layui-field-title{
+		width:1600px;
+	}
+</style>
+<div class="layui-body site-right">
+	<!--Start search toolbar -->
+	<fieldset class="layui-elem-field layui-field-title">
+		<legend>合作商户信息管理</legend>
+	</fieldset>
+	<form class="layui-form layui-form-pane"
+		method="post" id="searchForm">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">订单ID</label>
+				<div class="layui-input-inline">
+					<input type="text" name="orderId" id="orderId" <#if
+					order.orderId??>value='${order.orderId}'</#if>
+					autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">合作商户</label>
+				<div class="layui-input-inline">
+					<select name="partnerId" lay-filter="partnerId" id="partnerId">
+						<option value="">全部</option>
+						<option value="">全部</option>
+				        <#if partners?size gt 0>
+				        	<#list partners as partner>
+				        		<option value="${partner.partnerId}" <#if order.partnerId == partner.partnerId>selected="selected"</#if>>${partner.partnerName}</option>
+				        	</#list>
+				        </#if>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">商户应用</label>
+				<div class="layui-input-inline">
+					<select name="appId" id="appId" disabled title="" id="appId">
+						<#if partnerApp??>
+							<option value="partnerApp.appId">${partnerApp.appName}</option>
+						<#else>
+							<option value="">请选择商户应用</option>
+						</#if>
+					</select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">订单状态</label>
+				<div class="layui-input-inline">
+					<select name="status" id="status">
+				        <option value="">全部</option>
+				        <option value="">全部</option>
+				        <#if orderStatus?? && orderStatus?size gt 0>
+							<#list orderStatus as status>
+								<option value='${status.code}' <#if order.status == status.code> selected="selected" </#if>>${status.message}</option>
+							</#list>
+						</#if>	
+				      </select>
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">支付方式</label>
+				<div class="layui-input-inline">
+					<select name="payMode" id="payMode">
+				        <option value="">全部</option>
+				        <option value="">全部</option>
+				        <#if payModes?? && payModes?size gt 0>
+							<#list payModes as payMode>
+								<option value='${payMode.code}' <#if order.payMode == payMode.code> selected="selected" </#if>>${payMode.msg}</option>
+							</#list>
+						</#if>	
+				      </select>
+				</div>
+			</div>
+			
+		</div>
+		<div class="layui-form-item">
+			  <div class="layui-form-item">
+			    <label class="layui-form-label">开始时间</label>
+			    <div class="layui-input-inline">
+			      <input class="layui-input" placeholder="开始日期" id="LAY_demorange_s" <#if order.startTime??>value="${order.startTime}"</#if>>
+			    </div>
+			    <label class="layui-form-label">截止时间</label>
+			    <div class="layui-input-inline">
+			      <input class="layui-input" placeholder="截止日期" id="LAY_demorange_e" <#if order.endTime??>value="${order.endTime}"</#if>>
+			    </div>
+			  </div>
+		  </div>
+		  <input type="hidden" name="startTime" value="" id="startTime">	
+		  <input type="hidden" name="endTime" value="" id="endTime">	
+		  <input type="hidden" name="pageNo" value="1" id="pageNo">
+		<!-- End search toolbar -->
+
+		<blockquote class="layui-elem-quote">
+			<button class="layui-btn layui-btn-small" lay-submit="" lay-filter="submit-btn">
+				<i class="layui-icon">&#xe615;</i>立即查询
+			</button>
+			<a class="layui-btn layui-btn-small export"><i class="layui-icon">&#xe61e;</i>全部导出</a>
+		</blockquote>
+
+	</form>
+
+	<table class="layui-table" lay-even="" lay-skin="row">
+		<thead>
+			<tr>
+				<th>订单ID</th>
+				<th>商品主题</th>
+				<th>商品描述</th>
+				<th>商户订单号</th>
+				<th>订单金额</th>
+				<th>创建时间</th>
+				<th>订单状态</th>
+				<th>创建IP</th>
+				<th>支付方式</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody id="pageContent">
+			<#if orderPage.result?size gt 0> 
+				<#list orderPage.result as orders>
+					<tr>
+						<td>${orders.orderId}</td>
+						<td>${orders.subject}</td>
+						<td>${orders.detail}</td>
+						<td>${orders.outTradeNo}</td>
+						<td>${(orders.totalFee/100)?string('0.00')}</td>
+						<td>${orders.cTime[0..18]}</td>
+						<td>
+							<#if orderStatus??> 
+								<#list orderStatus as status> 
+									<#if status.code == orders.status>
+										${status.message} 
+									</#if> 
+								</#list> 
+							</#if>
+						</td>
+						<td>${orders.createIp}</td>
+						<td>
+							<#if payModes?? && orders.payMode??> 
+								<#list payModes as payMode> 
+									<#if payMode.code == orders.payMode>
+										${payMode.msg} 
+									</#if> 
+								</#list> 
+							</#if>
+						</td>
+						<td>
+							<a href="javascript:;"
+							class="layui-btn layui-btn-small showLog" orderId="${orders.orderId}"><i class="layui-icon">&#xe642;</i>查看日志</a>
+						</td>
+					</tr>
+				</#list> 
+				<#else>
+					<tr>
+						<td colspan="13" align="center">暂无数据!</td>
+					</tr>
+			</#if>
+		</tbody>
+	</table>
+	<div class="admin-table-page">
+		<div id="pagebar"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	layui.use([ 'element', 'laypage', 'layer', 'jquery','form','laydate' ], function() {
+		var laypage = layui.laypage, layer = layui.layer, element = layui
+				.element(),form = layui.form(), $ = layui.jquery,laydate = layui.laydate;
+		laypage({
+			cont : 'pagebar',
+			curr : '${orderPage.pageNo}',
+			pages : '${orderPage.totalPage}',
+			skip : true,
+			jump : function(obj, first) {
+				if (!first) {
+					$('#pageNo').val(obj.curr);
+					$('form').submit();
+				}
+			}
+		});
+		
+		$('.showLog').on('click',function(){
+			var orderId = $(this).attr('orderId');
+			layer.open({
+				title:"操作记录",
+				type : 2,
+				area:['800px','500px'],
+				content:"${basePath}/order/getOrderLog?orderId="+orderId
+			});
+		})
+		
+		$('.showNotify').on('click',function(){
+			var orderId = $(this).attr('orderId');
+			layer.open({
+				title:"回调详情",
+				type : 2,
+				area:['800px','500px'],
+				content:"${basePath}/order/getOrderNotify?orderId="+orderId
+			});
+		})
+		
+		form.on('select(partnerId)', function(data){
+			var partnerId = data.value;
+			form.render('select');
+			$.ajax({
+				url:'${basePath}/order/getPartnerApp',
+				data:{'partnerId':partnerId},
+				type:'post',
+				async:false,
+				success:function(result){
+					if(result.status){
+						$("#appId").empty();
+						var selectBody = '';
+						$.each(result.partnerApps,function(index,value){
+							selectBody += '<option value="'+value.appId+'">'+value.appName+'</option>'
+						});
+						$("#appId").removeAttr("disabled");
+						$("#appId").html(selectBody);
+						form.render('select');	
+					}else{
+						$("#appId").empty();
+						var selectBody = '<option value="">请选择商户应用</option>';
+						$("#appId").html(selectBody);
+						form.render('select');
+					}
+					 
+				}
+			});
+		})
+		
+		var start = {
+		     min: laydate.now(-30)
+		    ,max: laydate.now()
+		    ,istoday: false
+		    ,isclear:false
+		    ,format: 'YYYY-MM-DD hh:mm:ss'
+		    ,istime: true
+		    ,choose: function(datas){
+		      end.min = datas; //开始日选好后，重置结束日的最小日期
+		      end.start = datas //将结束日的初始值设定为开始日
+		      $("#startTime").val(datas);
+		      $("#startTime").attr("name","startTime");
+		    }
+		  };
+		  
+		  var end = {
+		    min: laydate.now(-30)
+		    ,max: laydate.now()
+		    ,istime: true
+		    ,format: 'YYYY-MM-DD hh:mm:ss'
+		    ,istoday: false
+		    ,isclear:false
+		    ,choose: function(datas){
+		      start.max = datas; //结束日选好后，重置开始日的最大日期
+		      $("#endTime").val(datas);
+		      $("#endTime").attr("name","endTime");
+		    }
+		  };
+		  //由于框架中如果timestamp的值为空时，会出现绑定对象异常，需要特殊处理
+		  //为开始时间和结束时间赋值，当时间选择器没有值时，去掉其name属性
+		  function setStartTimeAndEndTime(){
+			  if($('#LAY_demorange_s').val() != null && $('#LAY_demorange_s').val() != ''){
+		 			$("#startTime").val($('#LAY_demorange_s').val());
+		 			$("#startTime").attr("name","startTime");
+		 		}else{
+		 			$("#startTime").val($('#LAY_demorange_s').val());
+		 			$("#startTime").removeAttr("name");
+		 		}
+		 		if($('#LAY_demorange_e').val() != null && $('#LAY_demorange_e').val() != ''){
+		 			$("#endTime").val($('#LAY_demorange_e').val());
+		 			$("#endTime").attr("name","endTime");
+		 		}else{
+		 			$("#endTime").val($('#LAY_demorange_e').val());
+		 			$("#endTime").removeAttr("name");
+		 		}  
+		  }
+		  //初始化开始时间和结束时间
+	 	$(function(){
+	 		setStartTimeAndEndTime();
+	 	});
+		  //开始时间选择
+		  $('#LAY_demorange_s').on('click',function(){
+			  start.elem = this;
+			    laydate(start);
+		  });
+		  //开始时间输入框值发生改变时改变隐藏开始时间值
+		  $('#LAY_demorange_s').bind('input propertychange',function(){
+			  setStartTimeAndEndTime();
+		  });
+		  $('#LAY_demorange_e').on('click',function(){
+			  end.elem = this
+			  laydate(end);  
+		  });
+		  $('#LAY_demorange_e').bind('input propertychange',function(){
+			  setStartTimeAndEndTime();
+		  })
+
+		  //导出
+		  $(".export").on('click',function(){
+				var order = {};
+				if($("#orderId").val() != null){
+					order.orderId = $("#orderId").val();
+				}
+				if($("#status").val() != null){
+					order.status = $("#status").val();	
+				}
+				if($("#partnerId").val() != null){
+					order.partnerId = $("#partnerId").val();
+				}	
+				if($("#appId").val() != null){
+					order.appId = $("#appId").val();	
+				}
+				if($("#payMode").val() != null){
+					order.payMode = $("#payMode").val(); 
+				}
+				if($("#startTime").val() != null && $("#startTime").val() != ''){
+					order.startTime = $("#startTime").val(); 
+				}else{
+					layer.msg("请填写开始时间");
+					return false;
+				}
+				if($("#endTime").val() != null && $("#endTime").val() != ''){
+					order.endTime = $("#endTime").val();
+				}else{
+					layer.msg("请填写结束时间");
+					return false;
+				} 
+				var host = '${basePath}/order/export?orderId='+order.orderId+'&status='+
+					order.status+'&orderType='+order.orderType+'&sellerId='+order.sellerId+'&paymentId='+
+					order.paymentId+"&startTime="+order.startTime+"&endTime="+order.endTime;
+				location.href = host;
+		  });
+		  
+	})
+</script>
+</@rightContainer>

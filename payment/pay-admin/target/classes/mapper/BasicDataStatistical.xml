@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.paybasicdata.BasicDataStatisticalDao">
+
+	<insert id="save"  parameterType="BasicDataStatistical">
+	 	<![CDATA[
+	        INSERT INTO pay_basic_data (
+	        	payMode, payTotalPrice,appId,partnerId
+	        ) VALUES (
+	        
+	        #{payMode},#{payTotalPrice},#{appId},#{partnerId})
+	    ]]> 
+	</insert>
+	
+	<select id="getList" parameterType="BasicDataStatistical" resultType="BasicDataStatisticalVo">
+		SELECT * FROM pay_basic_data
+		<where>
+			<if test="payMode != null">
+				And payMode = #{payMode}
+			</if>
+			<if test="startTime != null and endTime != null" >
+				AND cTime &gt;= #{startTime} and cTime &lt; #{endTime}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

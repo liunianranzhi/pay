@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.paybasicdata.EveryDayTotalStatisticalDao">
+
+	<update id="update" parameterType="EveryDayTotalStatistical">
+		UPDATE pay_basic_statistical
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="channelTotalPrice != null">
+				channelTotalPrice = #{channelTotalPrice},
+			</if>
+			<if test="channelTotalCount != null">
+				channelTotalCount = #{channelTotalCount},
+			</if>
+			<if test="uTime != null">
+				uTime = #{uTime,jdbcType=TIMESTAMP}
+			</if>
+		</trim>
+		WHERE payMode=#{payMode}
+	</update>
+
+	<select id="getList" parameterType="EveryDayTotalStatistical" resultType="EveryDayTotalStatisticalVo">
+		SELECT * FROM pay_basic_statistical
+		<where>
+			<if test="payMode != null and payMode != ''">
+				AND payMode = #{payMode}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateAlluTime" parameterType="EveryDayTotalStatistical">
+		UPDATE pay_basic_statistical
+		<trim prefix="SET" suffixOverrides=",">
+			uTime = #{uTime}
+		</trim>
+	</update>
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+	<property name="info-file" value="log/pay-api-info.%d{yyyy-MM-dd}.log" />
+	<property name="sql-file" value="log/pay-api-sql.%d{yyyy-MM-dd}.log" />
+	
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>			
+		</encoder>
+	</appender>
+
+	<appender name="info-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${info-file}</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>			
+		</layout>
+	</appender>
+	
+	<appender name="sql-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${sql-file}</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>			
+		</layout>
+	</appender>
+	
+    <logger name="com.yijia360.pay.core.dao" level="debug" additivity="false">  
+        <appender-ref ref="sql-file" />  
+    </logger>  
+	
+	<root>
+		<level value="info" />
+		<appender-ref ref="info-file" />
+		<appender-ref ref="console" />
+	</root>
+</configuration>  

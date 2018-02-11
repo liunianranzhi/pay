@@ -1,0 +1,112 @@
+<#assign basePath = springMacroRequestContext.contextPath/>
+<link rel="stylesheet" href="${basePath}/layui/css/layui.css">
+<script src="${basePath}/layui/layui.js"></script>
+	<div style="padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px">
+	<form class="layui-form layui-form-pane" action="${basePath}/partner"
+		method="post" id="searchForm">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">商户名称</label>
+				<div class="layui-input-inline">
+					<input type="text" name="partnerName"<#if
+					partner.partnerName??>value='${partner.partnerName}'</#if>
+					autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">手机号码</label>
+				<div class="layui-input-inline">
+					<input type="text" name="mobile"<#if
+					partner.mobile??>value='${partner.mobile}'</#if>
+					autocomplete="off" class="layui-input">
+				</div>
+			</div>
+		</div>
+		<input type="hidden" name="pageNo" value="1" id="pageNo">
+		<!-- End search toolbar -->
+
+
+		<blockquote class="layui-elem-quote">
+			<button class="layui-btn layui-btn-small">
+				<i class="layui-icon">&#xe615;</i>立即查询
+			</button>
+		</blockquote>
+
+	</form>
+
+	<table class="layui-table" lay-even="" lay-skin="row">
+		<thead>
+			<tr>
+				<th>合作商名称</th>
+				<th>联系邮箱</th>
+				<th>联系人</th>
+				<th>联系电话</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody id="pageContent">
+			<#if partnerPage.result?size gt 0> 
+				<#list partnerPage.result as partner>
+					<tr>
+						<td>${partner.partnerName}</td>
+						<td>${partner.partnerMail}</td>
+						<td>${partner.operator}</td>
+						<td>${partner.mobile}</td>
+						<td>
+							<#if states?? && partner.state??> 
+								<#list states as state> 
+									<#if state.code==partner.state>
+										${state.message} 
+									</#if> 
+								</#list> 
+							</#if>
+						</td>
+						<td>
+							<a href="javascript:;" partnerName="${partner.partnerName}" partnerId="${partner.partnerId}"
+							class="layui-btn layui-btn-small subbtn"><i class="layui-icon">&#xe642;</i>确定</a>
+						</td>
+					</tr>
+				</#list> 
+				<#else>
+					<tr>
+						<td colspan="5" align="center">暂无数据!</td>
+					</tr>
+			</#if>
+		</tbody>
+	</table>
+	<div class="admin-table-page">
+		<div id="pagebar"></div>
+	</div>
+	</div>
+<script type="text/javascript">
+	layui.use([ 'element', 'laypage', 'layer', 'jquery' ], function() {
+		var laypage = layui.laypage, layer = layui.layer, element = layui
+				.element(), $ = layui.jquery;
+		laypage({
+			cont : 'pagebar',
+			curr : '${partnerPage.pageNo}',
+			pages : '${partnerPage.totalPage}',
+			skip : true,
+			jump : function(obj, first) {
+				if (!first) {
+					$('#pageNo').val(obj.curr);
+					$('form').submit();
+				}
+			}
+		});
+		
+		$(".subbtn").on('click',function(){
+			var partnerId = $(this).attr("partnerId");
+			var partnerName = $(this).attr("partnerName");
+			$(window.parent.document).find('#partnerId').val(partnerId);
+			$(window.parent.document).find('#partnerName').val(partnerName);
+			cancle();
+		});
+		
+		function cancle() {
+	        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	        parent.layer.close(index);
+	    };
+	})
+</script>

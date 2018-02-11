@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.order.OrderDao">
+
+	<select id="count" parameterType="Order" resultType="java.lang.Integer">
+		SELECT count(orderId) FROM pay_order
+		<where>
+			<if test="orderId != null">
+				And orderId = #{orderId}
+			</if>
+			<if test="appId != null">
+				And appId = #{appId}
+			</if>
+			<if test="partnerId != null">
+				And partnerId = #{partnerId}
+			</if>
+			<if test="status != null">
+				And status = #{status}
+			</if>
+			<if test="startTime != null and endTime != null" >
+				AND cTime between #{startTime} and  #{endTime}
+			</if>
+		</where>
+	</select>
+	
+	<select id="list" parameterType="Order" resultType="OrderVo">
+		SELECT * FROM pay_order
+		<where>
+			<if test="orderId != null">
+				And orderId = #{orderId}
+			</if>
+			<if test="appId != null">
+				And appId = #{appId}
+			</if>
+			<if test="partnerId != null">
+				And partnerId = #{partnerId}
+			</if>
+			<if test="status != null">
+				And status = #{status}
+			</if>
+			<if test="startTime != null and endTime != null" >
+				AND cTime between #{startTime} and  #{endTime}
+			</if>
+		</where>
+			order by cTime desc
+			LIMIT #{ start }, #{ pageSize }
+	</select>
+	
+	<select id="getList" parameterType="Order" resultType="OrderVo">
+		SELECT * FROM pay_order
+		<where>
+			<if test="orderId != null">
+				And orderId = #{orderId}
+			</if>
+			<if test="appId != null">
+				And appId = #{appId}
+			</if>
+			<if test="partnerId != null">
+				And partnerId = #{partnerId}
+			</if>
+			<if test="status != null">
+				And status = #{status}
+			</if>
+			<if test="startTime != null and endTime != null" >
+				AND cTime between #{startTime} and  #{endTime}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

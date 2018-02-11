@@ -1,0 +1,108 @@
+<#include "index.html">  
+<@rightContainer>  
+<div class="layui-body site-right">
+
+	<fieldset class="layui-elem-field layui-field-title">
+	  <legend>查看商户应用信息</legend>
+	</fieldset>
+
+	<form class="layui-form layui-form-pane">
+      <div class="layui-form-item">
+	      <label class="layui-form-label">应用名称</label>
+	  	  <div class="layui-input-inline">
+	      	<input type="text" name="appName" placeholder="请输入应用名称" readonly="readonly" autocomplete="off" value="${partnerApp.appName}" class="layui-input" lay-verify="required">
+	      </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">合作商Id</label>
+	    <div class="layui-input-inline">
+	      <input type="text" autocomplete="off" value="${partnerApp.partnerId}" id="partnerId" readonly="readonly" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">appId</label>
+	    <div class="layui-input-inline">
+	      <input type="text" autocomplete="off" value="${partnerApp.appId}" id="appId" readonly="readonly" class="layui-input">
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">appSecret</label>
+	    <div class="layui-input-inline">
+	      <input type="text" value="${partnerApp.appSecret}" readonly="readonly" id="appSecret" autocomplete="off" class="layui-input">
+	    </div>
+	  </div>
+	  <input type="hidden" value="${partnerApp.state}" id="state">
+	  <div class="layui-form-item">
+	    	<a class="layui-btn resetBtn" lay-filter="submit-btn">重置appSecret</a>
+	    	<#if partnerApp.state == 1>
+	    		<a class="layui-btn stopBtn" lay-filter="submit-btn">禁用应用</a>
+	    	<#else>
+	    		<a class="layui-btn stopBtn" lay-filter="submit-btn">启用应用</a>
+	    	</#if>
+	    	
+	  </div>
+	</form>
+</div>
+<script type="text/javascript">
+layui.use(['layer','jquery','form'], function(){
+	  var layer = layui.layer,$ = layui.jquery, form = layui.form();
+	  $(".resetBtn").on('click',function(){
+		  $(this).addClass("layui-btn-disabled");
+		  var appId = $("#appId").val();
+		  var partnerId = $("#partnerId").val();
+		  var partnerApp = {};
+		  partnerApp.appId = appId;
+		  partnerApp.partnerId = partnerId;
+		  $.ajax({
+			  url:'${basePath}/partnerApp/resetSecret',
+			  data:partnerApp,
+			  async:false,
+			  dataType:'json',
+			  type:'post',
+			  success:function(result){
+				  if(result.status){
+					  layer.msg(result.msg);
+					  $(this).addClass("layui-btn-disabled");
+					  setInterval(function(){
+						  location.href = location.href;
+					  },2000);
+					  return;
+				  }else{
+					  layer.msg(result.msg);
+					  return;
+				  }
+			  }
+		  });
+	  })
+	  
+	  	  $('.stopBtn').on('click',function(){
+	  		$(this).addClass("layui-btn-disabled");
+		  	var appId = $("#appId").val();
+		  	var partnerId = $("#partnerId").val();
+		  	var state = $("#state").val();
+		  	var partnerApp = {};
+		  	partnerApp.appId = appId;
+		  	partnerApp.partnerId = partnerId;
+		  	partnerApp.state = parseInt(state) == 1 ? 0 : 1;
+	  	  	$.ajax({
+	  		  url:'${basePath}/partnerApp/edit',
+			  data:partnerApp,
+			  async:false,
+			  dataType:'json',
+			  type:'post',
+			  success:function(result){
+				  if(result.status){
+					  layer.msg("设置成功");
+					  setInterval(function(){
+						  location.href = location.href;
+					  },2000);
+				  }else{
+					  layer.msg("设置失败");
+					  return;
+				  }
+			  }
+	  	  	});
+	  	})
+})
+</script>
+</@rightContainer>

@@ -1,0 +1,17 @@
+<#include "index.html">  
+<@rightContainer>
+<div class="layui-body site-right">
+	<fieldset class="layui-elem-field layui-field-title">
+		<legend>更新记录</legend>
+	</fieldset>
+	<blockquote class="layui-elem-quote">
+		<#if DISTRIBUTION_PLATFORM_CODE??>
+			${DISTRIBUTION_PLATFORM_CODE}<br/>
+		<#else>
+			<#list upgradeLogList as uplog>
+				${uplog}<br/>
+			</#list>
+		</#if>
+	</blockquote>	
+</div>
+</@rightContainer>

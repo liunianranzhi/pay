@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.admin.dao.order.OrderNotifyDao">
+	
+	<select id="count" parameterType="OrderNotify" resultType="java.lang.Integer">
+		SELECT count(orderId) FROM pay_order_notify
+		<where>
+			<if test="orderId != null">
+				And orderId = #{orderId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="list" parameterType="OrderNotify" resultType="OrderNotifyVo">
+		SELECT * FROM pay_order_notify
+		<where>
+			<if test="orderId != null">
+				And orderId = #{orderId}
+			</if>
+		</where>
+			LIMIT #{ start }, #{ pageSize }
+	</select>
+	
+</mapper>

@@ -1,0 +1,90 @@
+<#include "index.html">  
+<@rightContainer>  
+<div class="layui-body site-right">
+
+	<fieldset class="layui-elem-field layui-field-title">
+	  <legend>新增商户应用</legend>
+	</fieldset>
+
+	<form class="layui-form layui-form-pane"  method="post">
+  	  <div class="layui-form-item">
+	    <label class="layui-form-label">应用名称</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="appName" placeholder="请输入应用名称" autocomplete="off" class="layui-input" lay-verify="required">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填写应用名称</div>
+	  </div>
+	
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">商户信息</label>
+	    <div class="layui-input-inline">
+	      <input type="text" id="partnerName" autocomplete="off" readonly="readonly" value="" class="layui-input" lay-verify="required">
+	      <input type="text" id="partnerId"  name="partnerId" hidden="hidden" autocomplete="off" value="" lay-verify="required">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux"><input class="layui-btn layui-btn-small" id="choosePartner" type="button" value="选择商户" /></div>
+	  </div>
+
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">回调地址</label>
+	    <div class="layui-input-inline">
+	      <input type="text" name="notify" placeholder="请输入回调地址" autocomplete="off" class="layui-input" lay-verify="url">
+	    </div>
+	    <div class="layui-form-mid layui-word-aux">请务必填写回调地址</div>
+	  </div>
+	  
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">是否限制IP</label>
+	    <div class="layui-input-block">
+	      <#if partnerAppIsIpLimits ?? && partnerAppIsIpLimits?size gt 0>
+	      	<#list partnerAppIsIpLimits as partnerAppIsIpLimit>
+	      		<input type="radio" name="isIpLimit" value="${partnerAppIsIpLimit.code}" title="${partnerAppIsIpLimit.message}" lay-verify="required" checked="">
+	      	</#list>
+	      </#if>
+	    </div>
+	  </div>
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">ip地址</label>
+	    <div class="layui-input-block">
+	    	<textarea name="ip" style="width: 190px;height: 37px;" placeholder="如果有多个，请以逗号隔开"></textarea>
+	    </div>
+	  </div>
+	  
+	  <div class="layui-form-item">
+	    	<button class="layui-btn" lay-submit="" lay-filter="submit-btn">确认提交</button>
+	        <button type="reset" class="layui-btn ">重置表单</button>
+	  </div>
+	</form>
+</div>
+<script type="text/javascript">
+layui.use(['layer','jquery','form'], function(){
+	  var layer = layui.layer,$ = layui.jquery, form = layui.form();
+	  form.on('submit(submit-btn)', function(formData){
+        $.ajax({
+          type:'POST',
+	   	  url:'${basePath}/partnerApp/add',
+	   	  data:formData.field,
+	   	  success:function(result){
+	   		  if(!result){
+				layer.msg(result.msg)	   			  
+	   		  }else{
+	   			  layer.msg(result.msg);
+	   			  setInterval(function(){location.href="${basePath}/partnerApp";},2000);
+	   		  }
+	   	  }
+	     })
+	    return false;
+	  });
+	  
+	  $("#choosePartner").on('click',function(){
+		  layer.open({
+			  type: 2, 
+			  title: '商户列表',
+			  maxmin: true,
+			  fixed: false, //不固定
+			  area : ['800px' , '520px'],
+			  content: '${basePath}/partnerApp/partners'
+			});  
+	  });
+});
+</script>
+</@rightContainer>

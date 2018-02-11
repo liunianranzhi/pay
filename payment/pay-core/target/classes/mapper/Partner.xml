@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yijia360.pay.core.dao.partner.PartnerDao">
+	<select id="get" parameterType="Partner" resultType="PartnerVo">
+		SELECT * FROM pay_partner
+		<where>
+			<if test="partnerId != null">
+				AND partnerId = #{partnerId}
+			</if>
+		</where>
+		LIMIT 1
+	</select>
+</mapper>
