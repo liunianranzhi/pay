@@ -3,6 +3,7 @@ package com.yijia360.pay.core.service.pay.alipay.util;
 import java.net.URLEncoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +98,7 @@ public class AlipaySubmit {
 			PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(Base64.decode(privateKey));
 			KeyFactory keyf = KeyFactory.getInstance(ALGORITHM);
 			PrivateKey priKey = keyf.generatePrivate(priPKCS8);
-			java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+			Signature signature = Signature.getInstance(SIGN_ALGORITHMS);
 			signature.initSign(priKey);
 			signature.update(orderInfo.getBytes(DEFAULT_CHARSET));
 			byte[] signed = signature.sign();

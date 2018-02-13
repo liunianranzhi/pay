@@ -35,14 +35,14 @@ import com.yijia360.pay.entity.vo.partner.PayModeConfVo;
 public class WxPayService extends BaseService implements TradeService{
 	
 	
-	String payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+	static String  payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	
     @Value("${pay.wx.notify}")
 	String payNotify;
 
     
 	@Autowired
-	private RestTemplate restTemplate;
+	static RestTemplate restTemplate;
     
 	@Autowired
 	PayModeConfService payModeConfService;
@@ -59,15 +59,7 @@ public class WxPayService extends BaseService implements TradeService{
 	@Autowired  
 	CacheService cacheService;
 
-	public ServiceResult parsePayResult(String payResult){
-		JSONObject jsonResult = JSONObject.parseObject(payResult);
-		if(jsonResult.getString("return_code").equals("SUCCESS") && jsonResult.getString("result_code").equals("SUCCESS")){
-			return buildServiceResult(true, payResult,"");
-		}
-		logger.info("[微信支付失败]:{}",jsonResult);
-		String errCodeDes = jsonResult.getString("err_code_des");
-		return buildServiceResult(false,"","微信支付失败"+(StringUtils.isEmpty(errCodeDes)?"":errCodeDes));
-	}
+	
 	
 	
 	@Override
@@ -78,7 +70,7 @@ public class WxPayService extends BaseService implements TradeService{
 		}
 		//公众号ID
 		String wxAppId = payModeConf.getConfAppId();
-		//商户ID
+		//商户ID--微信支付分配的商户号
 		String mch_id =  payModeConf.getConfPartnerId();
 		//API私钥
 		String paternerKey = payModeConf.getConfPrivateKey();
@@ -183,6 +175,16 @@ public class WxPayService extends BaseService implements TradeService{
 		return buildServiceResult(true, signMap, "请求支付成功");
 	}
 
+	public ServiceResult parsePayResult(String payResult){
+		JSONObject jsonResult = JSONObject.parseObject(payResult);
+		if(jsonResult.getString("return_code").equals("SUCCESS") && jsonResult.getString("result_code").equals("SUCCESS")){
+			return buildServiceResult(true, payResult,"");
+		}
+		logger.info("[微信支付失败]:{}",jsonResult);
+		String errCodeDes = jsonResult.getString("err_code_des");
+		return buildServiceResult(false,"","微信支付失败"+(StringUtils.isEmpty(errCodeDes)?"":errCodeDes));
+	}
+	
 	/**
 	 * app微信支付
 	 * @param params
@@ -200,8 +202,10 @@ public class WxPayService extends BaseService implements TradeService{
 		reqMap.put("body", params.get("body"));
 		reqMap.put("spbill_create_ip", params.get("spbill_create_ip"));
 		reqMap.put("nonce_str", WxPayUtil.getRandom(32));
+		//签名
 		String sign = WxPayUtil.createSign(reqMap, params.get("paternerKey"));
 		reqMap.put("sign", sign);
+		//xmlData就是支付后的返回值--统一下单api
 		String xmlData =  restTemplate.postForObject(payUrl, WxPayUtil.toXml(reqMap), String.class);
 		
 		Map<String, String>  resultMap = WxPayUtil.xmlToMap(xmlData);
@@ -209,13 +213,17 @@ public class WxPayService extends BaseService implements TradeService{
 		if(!serviceResult.getStatus()){
 			return serviceResult;
 		}
+		//signMap--预支付订单返回的信息
 		Map<String, String> signMap = new HashMap<String, String>();
+		//商户号--调用接口提交的商户号
 		signMap.put("partnerid", resultMap.get("mch_id"));
+		//返回的预付单信息
 		signMap.put("prepayid", resultMap.get("prepay_id"));
 		signMap.put("appid", resultMap.get("appid"));
 		signMap.put("timestamp", String.valueOf(System.currentTimeMillis()/1000));
 		signMap.put("noncestr", resultMap.get("nonce_str"));
 		signMap.put("package", "Sign=WXPay");
+		//再按签名规范重新生成签名后，将数据传输给APP
 		String sign_ = WxPayUtil.createSign(signMap, params.get("paternerKey"));
 		signMap.put("sign", sign_);
 		return buildServiceResult(true, signMap, "请求支付成功");
@@ -295,5 +303,11 @@ public class WxPayService extends BaseService implements TradeService{
 			return orderNotifyService.notifyPartner(orderId).getStatus();
 		}
 		return false;
+	}
+	public static void main(String[] args) {
+		Map<String, String> reqMap  = new HashMap<String, String>();
+		reqMap.put("appid", "12");
+		System.out.println(WxPayUtil.toXml(reqMap));
+		
 	}
 }

@@ -1,0 +1,25 @@
+package com.rsa.test;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+public class TestRSA {
+
+	public static void main(String[] args) throws NoSuchAlgorithmException {
+		//RSA的公钥和私钥是由KeyPairGenerator生成的，获取KeyPairGenerator的实例后还需要设置其密钥位数
+		KeyPairGenerator keyPairGen  = KeyPairGenerator.getInstance("rsa");
+		keyPairGen.initialize(5);
+		//公钥和私钥可以通过KeyPairGenerator执行generateKeyPair()后生成密钥对KeyPair，
+		//通过KeyPair.getPublic()和KeyPair.getPrivate()来获取
+		
+		//// 动态生成密钥对，这是当前最耗时的操作，一般要2s以上
+		KeyPair keyPair = keyPairGen.generateKeyPair();
+		//公钥
+		PublicKey publicKey = keyPair.getPublic();
+		//私钥
+		PrivateKey private1 = keyPair.getPrivate();
+	}
+}

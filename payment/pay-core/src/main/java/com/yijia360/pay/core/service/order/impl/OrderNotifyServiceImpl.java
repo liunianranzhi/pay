@@ -32,10 +32,8 @@ public class OrderNotifyServiceImpl extends BaseService implements OrderNotifySe
 	@Autowired
 	private OrderService orderService;
 	
-	
 	@Autowired
 	private OrderLogService orderLogService;
-	
 	
 	@Autowired
 	private PartnerAppService partnerAppService;
